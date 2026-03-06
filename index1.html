@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanthar Net - Support Portal</title>
+    <style>
+        :root { --hanthar-red: #ff0000; --bg-color: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .form-container { background: #fff; width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 6px solid var(--hanthar-red); }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h2 { color: var(--hanthar-red); margin: 0; font-size: 26px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 15px; outline: none; }
+        .viber-btn { width: 100%; background: #7360f2; color: #fff; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .viber-btn:hover { background: #5e4dbf; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="header">
+        <h2>HANTHAR NET</h2>
+        <p>Bilin Office Support</p>
+    </div>
+    
+    <div class="form-group">
+        <label>ဝန်ဆောင်မှုအမျိုးအစား (Service Type)</label>
+        <select id="formType" onchange="toggleFields()">
+            <option value="Complain">Complain (တိုင်ကြားရန်)</option>
+            <option value="New Customer">New Customer (အသစ်တပ်ဆင်ရန်)</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="sideCodeGroup">
+        <label>Side Code / Customer ID</label>
+        <input type="text" id="sideCode" placeholder="ဥပမာ- HTN-BL-1234">
+    </div>
+
+    <div class="form-group">
+        <label>အမည် (Name)</label>
+        <input type="text" id="userName" placeholder="အမည် ရိုက်ထည့်ပါ" required>
+    </div>
+
+    <div class="form-group">
+        <label>နေရပ်လိပ်စာ (Address)</label>
+        <textarea id="userAddress" rows="2" placeholder="နေရပ်လိပ်စာ အပြည့်အစုံ..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>ဖုန်းနံပါတ် (Phone Number)</label>
+        <input type="tel" id="userPhone" placeholder="09xxxxxxxxx" required>
+    </div>
+
+    <div class="form-group" id="issueGroup">
+        <label>ပြဿနာအမျိုးအစား (Issue Type)</label>
+        <select id="issueType">
+            <option value="No Internet">လိုင်းမရပါ (No Internet)</option>
+            <option value="Slow Speed">လိုင်းနှေးနေပါ (Slow Speed)</option>
+            <option value="LOS Red Light">မီးနီပြနေပါ (LOS)</option>
+            <option value="Billing">ငွေပေးချေမှုဆိုင်ရာ (Billing)</option>
+        </select>
+    </div>
+
+    <button class="viber-btn" onclick="sendToViber()">Send to Viber</button>
+</div>
+
+<script>
+    // New Customer ဆိုရင် Side Code နဲ့ Issue Type ကို ဖျောက်ထားပေးမယ်
+    function toggleFields() {
+        const type = document.getElementById('formType').value;
+        const sideCodeGroup = document.getElementById('sideCodeGroup');
+        const issueGroup = document.getElementById('issueGroup');
+        
+        if (type === 'New Customer') {
+            sideCodeGroup.style.display = 'none';
+            issueGroup.style.display = 'none';
+        } else {
+            sideCodeGroup.style.display = 'block';
+            issueGroup.style.display = 'block';
+        }
+    }
+
+    function sendToViber() {
+        const type = document.getElementById('formType').value;
+        const sideCode = document.getElementById('sideCode').value;
+        const name = document.getElementById('userName').value;
+        const address = document.getElementById('userAddress').value;
+        const phone = document.getElementById('userPhone').value;
+        const issue = document.getElementById('issueType').value;
+
+        if(!name || !phone) {
+            alert("အမည်နှင့် ဖုန်းနံပါတ်ကို ပြည့်စုံစွာ ဖြည့်ပေးပါ ခင်ဗျာ။");
+            return;
+        }
+
+        // ရွေးချယ်လိုက်တဲ့ Type အလိုက် ခေါင်းစဉ်တပ်မယ်
+        let message = `--- ${type} ---%0A%0A`;
+        
+        if (type === 'Complain') {
+            message += `${sideCode}%0A${name}%0A${address}%0A${phone}%0A${issue}`;
+        } else {
+            // New Customer ဆိုရင် Side Code နဲ့ Issue မပါဘဲ ပို့မယ်
+            message += `${name}%0A${address}%0A${phone}`;
+        }
+        
+        window.location.href = `viber://forward?text=${message}`;
+    }
+</script>
+
+</body>
+</html>
